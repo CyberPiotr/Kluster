@@ -78,3 +78,14 @@ Frontend na gałęzi `klustertest` jest skonfigurowany pod projekt Supabase Klus
 ## Uwaga
 
 To nadal prototyp do sprawdzania frajdy i zasad. Nie ma jeszcze m.in. matchmakingu, trwałych kont, rankingu, reconnectu po utracie lokalnego tokenu ani pełnej fizyki biegunów magnetycznych.
+
+
+## Test rozrywki
+
+Gałąź `test-rozrywki` służy do eksperymentów poprawiających odczucie gry.
+
+Aktualny eksperyment:
+- proceduralny dźwięk zderzenia magnesów generowany przez Web Audio API,
+- dźwięk odpala się w końcowej fazie animacji przyciągania,
+- głośność lekko rośnie wraz z liczbą kamieni objętych reakcją,
+- brak zewnętrznego pliku audio i problemów licencyjnych.
