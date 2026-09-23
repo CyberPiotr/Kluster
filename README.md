@@ -5,7 +5,7 @@ Mobilny prototyp gry inspirowanej Kluster, przygotowany do testów lokalnych i o
 ## Status
 
 - 2 albo 3 graczy
-- po 7 kamieni na gracza
+- po 8 kamieni na gracza
 - tryb lokalny na jednym urządzeniu
 - tryb online przez kod pokoju
 - Supabase Realtime
@@ -20,7 +20,7 @@ Mobilny prototyp gry inspirowanej Kluster, przygotowany do testów lokalnych i o
 - zasięg magnesu: 70 px
 - offset kamienia względem palca: -45 px poziomo / +55 px pionowo
 - drżenie: 0,35 s
-- kamienie: 7 na gracza
+- kamienie: 8 na gracza
 - pajęczy zmysł: wyłączony
 
 ## Test online
