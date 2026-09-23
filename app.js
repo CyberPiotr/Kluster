@@ -35,6 +35,79 @@
   let animation = null;
   let lastEventId = null;
   let busy = false;
+  let audioCtx = null;
+
+  function primeAudio() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    if (!audioCtx) {
+      try {
+        audioCtx = new AudioCtx({ latencyHint: 'interactive' });
+      } catch (_) {
+        audioCtx = new AudioCtx();
+      }
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  }
+
+  function playMagnetClack(strength = 1) {
+    primeAudio();
+    if (!audioCtx || audioCtx.state !== 'running') return;
+
+    const now = audioCtx.currentTime + 0.006;
+    const master = audioCtx.createGain();
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.42 * strength, now + 0.003);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    master.connect(audioCtx.destination);
+
+    const low = audioCtx.createOscillator();
+    const lowGain = audioCtx.createGain();
+    low.type = 'triangle';
+    low.frequency.setValueAtTime(230, now);
+    low.frequency.exponentialRampToValueAtTime(105, now + 0.09);
+    lowGain.gain.setValueAtTime(0.32 * strength, now);
+    lowGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+    low.connect(lowGain).connect(master);
+    low.start(now);
+    low.stop(now + 0.12);
+
+    const ping = audioCtx.createOscillator();
+    const pingGain = audioCtx.createGain();
+    ping.type = 'sine';
+    ping.frequency.setValueAtTime(1550, now);
+    ping.frequency.exponentialRampToValueAtTime(760, now + 0.045);
+    pingGain.gain.setValueAtTime(0.22 * strength, now);
+    pingGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+    ping.connect(pingGain).connect(master);
+    ping.start(now);
+    ping.stop(now + 0.065);
+
+    const length = Math.max(1, Math.floor(audioCtx.sampleRate * 0.055));
+    const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i++) {
+      const env = Math.pow(1 - i / length, 3);
+      data[i] = (Math.random() * 2 - 1) * env;
+    }
+    const noise = audioCtx.createBufferSource();
+    const filter = audioCtx.createBiquadFilter();
+    const noiseGain = audioCtx.createGain();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2600;
+    filter.Q.value = 0.9;
+    noiseGain.gain.setValueAtTime(0.20 * strength, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+    noise.buffer = buffer;
+    noise.connect(filter).connect(noiseGain).connect(master);
+    noise.start(now);
+    noise.stop(now + 0.06);
+  }
+
+  document.addEventListener('pointerdown', primeAudio, { passive: true });
+  document.addEventListener('keydown', primeAudio);
 
   function onlineConfigured() {
     const cfg = window.KLUSTER_CONFIG || {};
@@ -334,7 +407,7 @@
 
   function startEventAnimation(event) {
     if (event.type !== 'reaction') return;
-    animation = { event, start: performance.now() };
+    animation = { event, start: performance.now(), soundPlayed: false };
   }
 
   async function api(body) {
@@ -533,6 +606,13 @@
     }
 
     const t = Math.min(1, (elapsed - shakeMs) / pullMs);
+
+    if (!animation.soundPlayed && t >= 0.72) {
+      const strength = Math.min(1.25, 0.9 + stones.length * 0.06);
+      playMagnetClack(strength);
+      animation.soundPlayed = true;
+    }
+
     const q = 1 - Math.pow(1 - t, 3);
     stones.forEach((s, i) => {
       const x = s.x + (cx - s.x) * q;
