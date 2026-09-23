@@ -42,12 +42,13 @@ async function hashToken(token: string) {
   return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-function initialState(maxPlayers: number, firstPlayer: any) {
+function initialState(maxPlayers: number, firstPlayer: any, startingStones: number) {
   return {
     max_players: maxPlayers,
     status: "waiting",
     players: [firstPlayer],
-    hands: Array(maxPlayers).fill(7),
+    starting_stones: startingStones,
+    hands: Array(maxPlayers).fill(startingStones),
     stones: [],
     current: 0,
     winner: null,
@@ -101,13 +102,17 @@ async function verifyPlayer(gameId: string, playerId: string, token: string) {
 async function createRoom(body: any) {
   const maxPlayers = Number(body.maxPlayers);
   if (![2,3].includes(maxPlayers)) return json({ error: "Dozwolone są 2 albo 3 osoby." }, 400);
+  const requestedStartingStones = Number(body.startingStones ?? 7);
+  const startingStones = Number.isInteger(requestedStartingStones)
+    ? Math.max(1, Math.min(20, requestedStartingStones))
+    : 7;
   const playerId = crypto.randomUUID();
   const token = randomToken();
   const player = { id: playerId, seat: 0, name: cleanName(body.name), color: COLORS[0] };
 
   for (let attempt = 0; attempt < 6; attempt++) {
     const code = code6();
-    const state = initialState(maxPlayers, player);
+    const state = initialState(maxPlayers, player, startingStones);
     const { data: game, error } = await admin.from("games").insert({ code, max_players: maxPlayers, status: "waiting", state, version: 0 }).select("*").single();
     if (error) {
       if (String(error.code) === "23505") continue;
@@ -232,7 +237,7 @@ async function resetRoom(body: any) {
   if (player.seat !== 0) return json({ error: "Tylko host może zresetować rundę." }, 403);
 
   const state = structuredClone(game.state);
-  state.hands = Array(state.max_players).fill(7);
+  state.hands = Array(state.max_players).fill(Number(state.starting_stones ?? 7));
   state.stones = [];
   state.current = 0;
   state.winner = null;
