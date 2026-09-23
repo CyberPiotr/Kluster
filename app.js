@@ -8,6 +8,7 @@
   const BOARD_X = 180;
   const BOARD_Y = 190;
   const DEFAULTS = { boardR: 145, range: 70, stoneR: 15, offsetX: -45, offsetY: 55, shake: 0.35 };
+  const STARTING_STONES = 8;
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -161,7 +162,7 @@
       max_players: count,
       status: 'playing',
       players: p,
-      hands: Array(count).fill(7),
+      hands: Array(count).fill(STARTING_STONES),
       stones: [],
       current: 0,
       winner: null,
@@ -265,7 +266,7 @@
       const card = document.createElement('div');
       card.className = 'score-card' + (game.current === seat && game.status === 'playing' ? ' active' : '');
       card.style.color = p.color || COLORS[seat];
-      card.innerHTML = `<div class="score-name">${escapeHtml(p.name || COLOR_NAMES[seat])}</div><div class="score-count">${game.hands?.[seat] ?? 7}</div>`;
+      card.innerHTML = `<div class="score-name">${escapeHtml(p.name || COLOR_NAMES[seat])}</div><div class="score-count">${game.hands?.[seat] ?? STARTING_STONES}</div>`;
       els.scoreboard.appendChild(card);
     }
 
@@ -431,7 +432,7 @@
     if (!onlineConfigured()) return setLobbyStatus('Najpierw skonfiguruj Supabase w config.js.', true);
     try {
       setLobbyStatus('Tworzę pokój...');
-      const data = await api({ action: 'create_room', maxPlayers: onlinePlayerCount, name: els.createName.value.trim() || 'Gracz 1' });
+      const data = await api({ action: 'create_room', maxPlayers: onlinePlayerCount, startingStones: STARTING_STONES, name: els.createName.value.trim() || 'Gracz 1' });
       saveSession(data.game.code, data.player);
       enterGame('online', data.game.state, data.game.code, data.player);
       await subscribeRoom(data.game.code);
@@ -573,7 +574,7 @@
       ctx.fillStyle = COLORS[seat];
       ctx.font = '700 11px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(String(game.hands?.[seat] ?? 0), src.x, 487);
+      ctx.fillText(String(game.hands?.[seat] ?? STARTING_STONES), src.x, 487);
       if (active) {
         ctx.strokeStyle = COLORS[seat];
         ctx.lineWidth = 2;
