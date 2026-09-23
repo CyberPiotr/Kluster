@@ -1,0 +1,68 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b0f14;
+  --panel: #151a21;
+  --panel2: #1c222b;
+  --line: #303844;
+  --text: #f3f6fa;
+  --muted: #9aa5b1;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --green: #22c55e;
+  --accent: #f2f4f7;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body { padding: 18px 12px 40px; }
+button, input { font: inherit; }
+button { min-height: 44px; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+.app-shell { width: min(760px, 100%); margin: 0 auto; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 14px; }
+h1, h2, p { margin-top: 0; }
+h1 { font-size: clamp(1.65rem, 6vw, 2.3rem); margin-bottom: 0; }
+h2 { font-size: 1.05rem; margin-bottom: 8px; }
+.eyebrow { color: var(--muted); font-size: .72rem; letter-spacing: .14em; font-weight: 800; margin-bottom: 4px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+.hidden { display: none !important; }
+.mode-switch, .segmented { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+.mode-btn, .player-count, .online-count, .ghost, .secondary { background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.mode-btn.active, .player-count.active, .online-count.active { border-color: #7f8a98; background: var(--panel2); }
+.primary { width: 100%; background: var(--accent); color: #11151a; border: 0; border-radius: 12px; padding: 11px 16px; font-weight: 800; }
+.secondary { width: 100%; font-weight: 700; }
+.online-grid { display: grid; gap: 12px; }
+.subpanel { border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+label { display: grid; gap: 7px; color: #d7dde5; font-size: .9rem; margin-bottom: 12px; }
+input[type="text"], input:not([type]) { width: 100%; }
+input[type="range"] { width: 100%; accent-color: #d8dde5; }
+input[type="text"], input[type="search"], input[type="number"], input:not([type]), #createName, #joinName, #joinCode { background: #0f141a; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; min-height: 44px; font-size: 16px; }
+.notice { background: #111923; border: 1px solid #3b4b60; border-radius: 12px; padding: 12px; color: #c9d6e5; margin-bottom: 12px; }
+.status-line { color: var(--muted); margin: 8px 0 0; min-height: 1.3em; }
+.game-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.game-head h2 { font-size: 1.25rem; margin: 0; }
+.game-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.scoreboard { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.score-card { border-radius: 14px; padding: 11px 12px; background: var(--panel); border: 1px solid var(--line); min-width: 0; }
+.score-card.active { outline: 2px solid currentColor; outline-offset: -2px; }
+.score-name { font-size: .78rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.score-count { font-size: 1.45rem; font-weight: 850; line-height: 1.1; }
+.settings { margin-bottom: 10px; }
+.settings-grid { display: grid; gap: 10px; }
+.board-panel { padding: 10px; }
+#gameCanvas { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; touch-action: none; overscroll-behavior: contain; background: #10151b; border: 1px solid #2d3540; border-radius: 16px; }
+.microcopy { color: var(--muted); font-size: .76rem; margin: 9px 2px 0; line-height: 1.45; }
+code { color: #e4ebf3; }
+@media (min-width: 620px) {
+  .online-grid { grid-template-columns: 1fr 1fr; }
+  .settings-grid { grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+  .scoreboard.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  body { padding: 10px 8px 28px; }
+  .panel { padding: 12px; border-radius: 15px; }
+  .game-head { display: block; }
+  .game-actions { justify-content: flex-start; margin-top: 10px; }
+  .scoreboard.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .score-card { padding: 9px 8px; }
+  .score-count { font-size: 1.25rem; }
+}

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+  <title>Kluster Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PROTOTYP MULTIPLAYER</p>
+        <h1>Kluster Test</h1>
+      </div>
+      <button id="leaveGameBtn" class="ghost hidden" type="button">Wyjdź z gry</button>
+    </header>
+
+    <section id="lobbyView" class="panel lobby">
+      <div class="mode-switch" role="tablist" aria-label="Tryb gry">
+        <button id="localTab" class="mode-btn active" type="button">Lokalnie</button>
+        <button id="onlineTab" class="mode-btn" type="button">Online</button>
+      </div>
+
+      <div id="localPanel" class="mode-panel">
+        <h2>Szybki test na jednym urządzeniu</h2>
+        <p>Wybierz 2 albo 3 graczy. Każdy zaczyna z 7 kamieniami.</p>
+        <div class="segmented" aria-label="Liczba graczy lokalnie">
+          <button class="player-count active" data-count="2" type="button">2 graczy</button>
+          <button class="player-count" data-count="3" type="button">3 graczy</button>
+        </div>
+        <button id="startLocalBtn" class="primary" type="button">Rozpocznij lokalnie</button>
+      </div>
+
+      <div id="onlinePanel" class="mode-panel hidden">
+        <div id="onlineUnavailable" class="notice hidden">
+          Online wymaga konfiguracji Supabase w <code>config.js</code>. Tryb lokalny działa od razu.
+        </div>
+        <div class="online-grid">
+          <div class="subpanel">
+            <h2>Utwórz pokój</h2>
+            <label>Twój nick
+              <input id="createName" maxlength="18" value="Gracz 1" />
+            </label>
+            <div class="segmented" aria-label="Liczba graczy online">
+              <button class="online-count active" data-count="2" type="button">2 graczy</button>
+              <button class="online-count" data-count="3" type="button">3 graczy</button>
+            </div>
+            <button id="createRoomBtn" class="primary" type="button">Utwórz pokój</button>
+          </div>
+
+          <div class="subpanel">
+            <h2>Dołącz</h2>
+            <label>Twój nick
+              <input id="joinName" maxlength="18" value="Gracz" />
+            </label>
+            <label>Kod pokoju
+              <input id="joinCode" maxlength="6" autocomplete="off" placeholder="ABC123" />
+            </label>
+            <button id="joinRoomBtn" class="secondary" type="button">Dołącz do pokoju</button>
+          </div>
+        </div>
+      </div>
+
+      <p id="lobbyStatus" class="status-line" aria-live="polite"></p>
+    </section>
+
+    <section id="gameView" class="hidden">
+      <div class="game-head panel">
+        <div>
+          <p id="roomLine" class="eyebrow"></p>
+          <h2 id="turnTitle">Tura gracza</h2>
+          <p id="gameStatus" class="status-line" aria-live="polite"></p>
+        </div>
+        <div class="game-actions">
+          <button id="resetRoundBtn" class="ghost" type="button">Reset rundy</button>
+          <button id="toggleSettingsBtn" class="ghost" type="button">Ustawienia testowe</button>
+        </div>
+      </div>
+
+      <div id="scoreboard" class="scoreboard"></div>
+
+      <section id="settingsPanel" class="panel settings hidden">
+        <div class="settings-grid">
+          <label>Promień planszy <span id="boardRVal">145</span> px
+            <input id="boardR" type="range" min="110" max="165" step="5" value="145" />
+          </label>
+          <label>Zasięg magnesu <span id="rangeVal">70</span> px
+            <input id="range" type="range" min="45" max="95" step="5" value="70" />
+          </label>
+          <label>Offset poziomy <span id="offsetXVal">-45</span> px
+            <input id="offsetX" type="range" min="-90" max="20" step="5" value="-45" />
+          </label>
+          <label>Offset pionowy <span id="offsetYVal">55</span> px
+            <input id="offsetY" type="range" min="0" max="95" step="5" value="55" />
+          </label>
+          <label>Drżenie <span id="shakeVal">0.35</span> s
+            <input id="shake" type="range" min="0.15" max="0.65" step="0.05" value="0.35" />
+          </label>
+        </div>
+        <p class="microcopy">W trybie online ustawienia mechaniki są ustalane przez pokój. Zmieniaj je głównie podczas testów lokalnych.</p>
+      </section>
+
+      <section class="board-panel panel">
+        <canvas id="gameCanvas" width="360" height="500" aria-label="Plansza gry"></canvas>
+        <p class="microcopy">Złap kamień aktywnego gracza z dołu. Kamień jest przesunięty o -45 / +55 px względem palca, żeby był widoczny.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
